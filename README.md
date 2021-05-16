@@ -11,9 +11,8 @@ The dashboard was created to evaluate two facts. First, whether citizens are mor
 
 ## How to install
 * Clone the repository
-* Install dependencies:
-  * python -m pip install dash
-  * python -m pip install dash-bootstrap-components
+* Install dependencies (Pandas, Plotly, Dash):
+  * pip install -r requirements.txt
 
 ## Interface
 ![HomePage](/assets/Homepage_NBDash.png)
@@ -22,5 +21,5 @@ HomePage Interface of NBDash. This interface regroups two other dashboards imple
 ![NBDash Interface](/assets/NBDash.png)
 NBDash Interface. (1): Dashboard description with information about data used. (2): Possibility to choose the display type (simple, less advanced and advanced) based on the user preference. (3): Filters used to update the visualizations. (4): Display overview of the data. (5): Visualization used to present more details with descending sort to help user easily capture insights. (6): Description and interpretation of the graph.   
 
-##Contact Us
+## Contact Us
 [Abiola P. Chokki](mailto:abiola-paterne.chokki@unamur.be)
