@@ -186,7 +186,12 @@ layout = dbc.Container([
                             html.H5("Vos commentaires sont les bienvenus :)",
                                         className='sm-title mb-2'),
                             html.Div([
-                                html.A("Nous contacter", href='mailto:abiola-paterne.chokki@unamur.be', className="btn bglarge rounded no-decor btn-success"),
+                                html.A("Nous contacter", href='mailto:abiola-paterne.chokki@unamur.be', className="btn bglarge rounded no-decor btn-primary"),
+                            ], className="mb-2"),
+                            html.H5("Accès au code source",
+                                        className='sm-title mb-2'),
+                            html.Div([
+                                html.A("Github", href='https://github.com/chokkipaterne/nbdash', className="btn bglarge rounded no-decor btn-success"),
                             ], className="mb-4"),
                         ]
                     ),
