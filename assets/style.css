@@ -1,0 +1,221 @@
+body, html{
+  font-family: sans-serif;
+}
+.msgtop{
+    margin-top: 80px;
+    text-transform: capitalize;
+    font-size: 1.8rem;
+    font-weight: 500;
+}
+.bold{
+  font-weight: 550;
+}
+.subtop{
+  font-size: 1.7rem;
+  font-weight: 520;
+}
+.bgGray{
+  background: #dddddd !important;
+  padding:2% 25px;
+}
+.mgmail{
+  margin-bottom: 60px;
+}
+.bottom{
+    background: #28a745;
+    line-height: 1.55;
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 7px 10px;
+    color: white;
+    margin: 0px !important;
+    width: 100%;
+}
+
+#page-content{
+    min-height: 90vh;
+}
+
+.card-title {
+    line-height: 1;
+    padding: 5px 0px;
+    margin: 0px !important;
+}
+
+.card-body{
+    /*border-top: 1px solid #0E2240;*/
+    padding: 5px 8px;
+}
+.card-text{
+    font-size: 1.3rem;
+}
+.card-link{
+    font-size: 1.65rem;
+    text-decoration: none;
+    color: #28a745;
+}
+.no-decor{
+    text-decoration: none !important;
+}
+a.no-decor:focus, a.no-decor:active{
+  text-decoration: none !important;
+}
+.large{
+  font-size: 1.5rem;
+  padding: 8px 25px;
+  text-transform: uppercase;
+}
+.bglarge{
+  padding: 10px 25px;
+  font-size: 1.15rem;
+  text-transform: uppercase;
+}
+.btImg1{
+  width: 70px;
+  height: 70px;
+}
+.btImg2{
+  width: 160px;
+  height: 70px;
+}
+.back{
+  padding-top: 15px !important;
+  color: green !important;
+}
+.title-dash{
+  font-size: 1.7rem;
+  font-weight: 700;
+  /*color: #28a745;*/
+  color: #000000;
+}
+.sm-title{
+  font-size: 1.5rem;
+  font-weight: 600;
+  /*color: #28a745;*/
+  color: #000000;
+}
+.sm-font{
+  font-size: 1.4rem;
+}
+.text-black{
+  color: black !important;
+}
+#budget-type{
+  min-width: 80px;
+  display: inline-flex;
+}
+#budget-year{
+  min-width: 40px;
+  display: inline-flex;
+}
+#graph-drop{
+  min-width: 87px;
+  display: inline-flex;
+}
+#group-drop{
+  min-width: 87px;
+  display: inline-flex;
+}
+.dsp-flex{
+  display: inline-flex;
+}
+.minh{
+  min-height: 82vh;
+}
+.shadow{
+  -webkit-box-shadow: 0 2px 2px 0 rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%), 0 1px 5px 0 rgb(0 0 0 / 20%);
+    box-shadow: 0 2px 2px 0 rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%), 0 1px 5px 0 rgb(0 0 0 / 20%);
+}
+.div-right{
+  margin-bottom: 50px;
+}
+.div-left{
+  margin-bottom: 50px;
+}
+.round{
+  border-radius: 15px;
+}
+#top-title .Select-control, #top-graph .Select-control {
+  border-radius: 0px !important;
+  border: 0px solid transparent;
+  border-bottom: 1px dashed #ccc;
+}
+/*.Select--single>.Select-control .Select-value, .Select-placeholder{
+  padding-left: 0px !important;
+}*/
+.stat-title{
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.stat-amt{
+  font-size: 1.7rem;
+  font-weight: 600;
+  text-align: center;
+}
+.stat-text{
+  font-size: 1.1rem;
+  text-align: right;
+}
+.greenspan{
+  color: green;
+  font-weight: 600;
+}
+.redspan{
+  color: red;
+  font-weight: 600;
+}
+.round.card{
+  margin-bottom: 20px;
+}
+.spansm{
+  font-size: 0.85rem;
+}
+#display{
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+input[type=checkbox], input[type=radio] {
+    margin-right: 6px !important;
+}
+label{
+  font-size: 1.35rem;
+}
+.max_filt_height{
+  max-height: 150px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+  padding: 5px 5px;
+}
+.max_filt_big_height{
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+  padding: 5px 5px;
+}
+.btGraph{
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+#graph-btns button{
+  border: 0px solid #bbb;
+  padding:0px !important;
+  width: 100%;
+  text-align: left;
+}
+#right-graph, #left-graph{
+  margin-bottom: 30px;
+}
+#interpret-graph{
+  font-size: 1.3rem;
+  background: #eee;
+  padding: 10px;
+}
+#top-graph{
+  margin-bottom: 30px !important;
+}
+.author{
+  font-size: 1.1rem;
+}
