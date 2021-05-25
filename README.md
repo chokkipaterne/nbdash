@@ -7,7 +7,7 @@ NBDash used two main datasets available on the Namur open data portal:
 [Namur-Ordinary Budget by function](https://rb.gy/61r8dk) and [Namur-Extraordinary Budget by function](https://rb.gy/dpayws)
 
 ## Objective
-The dashboard was created to evaluate two facts. First, whether citizens are more receptive to dashboards than to visualizations offered on a traditional OGD portal. Second, whether the implemented dashboard design recommendations help to increase the citizen engagement compared to the existent dashboards on a traditional OGD portal.   
+The dashboard was created to evaluate whether citizens are more receptive to well-designed dashboards than to visualizations offered on a traditional Open Government Data portal.  
 
 ## How to install
 * Clone the repository
@@ -16,10 +16,13 @@ The dashboard was created to evaluate two facts. First, whether citizens are mor
 
 ## Interface
 ![HomePage](/assets/Homepage_NBDash.png)
-HomePage Interface of NBDash. This interface regroups two other dashboards implemented by the city of Namur.
+HomePage Interface of NBDash.
 
-![NBDash Interface](/assets/NBDash.png)
-NBDash Interface. (1): Dashboard description with information about data used. (2): Possibility to choose the display type (simple, less advanced and advanced) based on the user preference. (3): Filters used to update the visualizations. (4): Display overview of the data. (5): Visualization used to present more details with descending sort to help user easily capture insights. (6): Description and interpretation of the graph.   
+![NBDash Interface for simple display](/assets/NBDash.png)
+NBDash Interface for simple display. (1): Description of dashboard. (2): Information about the data used. (3): Possibility to give feedback and track status (4): Possibility to choose the display type (simple, less advanced and advanced). (3): Filters used to update the visualizations. (6): Display of the data overview. (6): Visualization used to present more details with descending sorting to help the user easily capture insights. (7): Automatic description and interpretation of the graph.   
+
+![NBDash Interface for Less advanced and Advanced displays.](/assets/NBDash.png)
+NBDash Interface for Less advanced and Advanced displays. For less advanced users, the button “Edit chart”(6-B) isn’t visible. Section 6-A is used to display the selected visualization followed by data displayed in table format (6-C). Section 7-A allows to choose the type of graph. Section 7-B allows to choose the data to be displayed on axis X. Section 7-C allows to choose the functions to be represented in the graph. Section 7-D allows to specify the sorting option.
 
 ## Contact Us
-[Abiola P. Chokki](mailto:abiola-paterne.chokki@unamur.be)
+Abiola P. Chokki (abiola-paterne.chokki@unamur.be)

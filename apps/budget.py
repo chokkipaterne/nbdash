@@ -1,6 +1,6 @@
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import plotly.express as px
 import pandas as pd
 import pathlib
@@ -9,16 +9,24 @@ import dash_bootstrap_components as dbc
 import utils
 import dash
 import plotly.express as px
+from datetime import datetime
+
+#Set two decimals for float format
+pd.options.display.float_format = '{:,.2f}'.format
 
 PATH = pathlib.Path(__file__).parent
-DATA_PATH = PATH.joinpath("../datasets/budget_namur").resolve()
-BUDGET_TYPES = ["ordinaire", "extraordinaire"]
-GROUP_GRAPH_TYPES = ["fonction","type"]
-GRAPH_TYPES = ["recettes","dépenses"]
+DATA_PATH = PATH.joinpath("../datasets").resolve()
+BUDGET_TYPES = ["ordinary", "extraordinary"]
+GROUP_GRAPH_TYPES = ["function", "type"]
+GRAPH_TYPES = ["revenues", "expenses"]
 
 #read files
 dfbo = pd.read_csv(DATA_PATH.joinpath("namur-budget-ordinaire-par-fonction.csv"), delimiter=";")
 dfbe = pd.read_csv(DATA_PATH.joinpath("namur-budget-extraordinaire-par-fonction.csv"), delimiter=";")
+dff = pd.read_csv(DATA_PATH.joinpath("feedback-file.csv"), delimiter=";")
+table_feedback = [
+    utils.feedback_table(dff)
+]
 
 dfbo.columns = dfbo.columns.str.strip()
 dfbe.columns = dfbe.columns.str.strip()
@@ -26,39 +34,40 @@ dfbe.columns = dfbe.columns.str.strip()
 #get distinct years
 years = sorted(dfbo["Exercice"].unique(), reverse=True)
 
+#Define some variables
 user_displays = [
-    dbc.DropdownMenuItem("Simple", id="pasdutt", n_clicks_timestamp='0'),
-    dbc.DropdownMenuItem("Moins avancée", id="unpeu", n_clicks_timestamp='0'),
-    dbc.DropdownMenuItem("Avancée", id="biensure", n_clicks_timestamp='0'),
+    dbc.DropdownMenuItem("Simple (New to visualization)", id="pasdutt", n_clicks_timestamp='0'),
+    dbc.DropdownMenuItem("Less advanced (Need more control on data and visualizations displayed)", id="unpeu", n_clicks_timestamp='0'),
+    dbc.DropdownMenuItem("Advanced (Need to edit visualizations)", id="biensure", n_clicks_timestamp='0'),
 ]
-current_display = "Simple"
+current_display = "Simple (New to visualization)"
 init_conf = "pasdutt"
 init_timestamps = 0
 
 
-labels_cols_ord = ['Exercice', 'Fonctions', 'Recette/Prestations', 'Recette/Transferts',
-       'Recette/Dette', 'Recette/Total', 'Recette/Prélèvements',
+labels_cols_ord = ['fiscal year', 'function', 'Recette/Prestations', 'Recette/Transferts',
+       'Recette/Dette', 'revenue/total', 'Recette/Prélèvements',
        'Recette/TotalAvecPrélèvement', 'Dépenses/Personnel',
        'Dépenses/Fonctionnement', 'Dépenses/Transferts', 'Dépenses/Dette',
-       'Dépenses/Total', 'Dépenses/Prélèvements',
+       'expense/total', 'Dépenses/Prélèvements',
        'Dépenses/TotalAprèsPrélèvements']
 recette_ord_start = 2
 recette_ord_end = 8
 depense_ord_start = 8
 depense_ord_end = 15
 
-labels_cols_extra = ['Exercice', 'Fonctions', 'Recettes/Transferts',
-       'Recettes/Investissements', 'Recettes/Dette', 'Recettes/Total',
+labels_cols_extra = ['fiscal year', 'function', 'Recettes/Transferts',
+       'Recettes/Investissements', 'Recettes/Dette', 'revenue/total',
        'Recettes/Prélèvements', 'Recettes/TotalAprèsPrélèvements',
        'Dépenses/Transferts', 'Dépenses/Investissements', 'Dépenses/Dette',
-       'Dépenses/Total', 'Dépenses/Prélèvements',
+       'expense/total', 'Dépenses/Prélèvements',
        'Dépenses/TotalAprèsPrélèvements']
 recette_extra_start = 2
 recette_extra_end = 8
 depense_extra_start = 8
 depense_extra_end = 14
 
-retrieved_date = "19 Août 2020"
+retrieved_date = "August 19, 2020 (annual update)"
 
 col_ord_recette_total = dfbo.columns[5]
 col_ord_depense_total = dfbo.columns[12]
@@ -69,37 +78,39 @@ indice_ord_depense_total = 12
 indice_extra_recette_total = 5
 indice_extra_depense_total = 11
 
-label_total_recette_ord = "Total Recettes Ordinaire"
-label_total_depense_ord = "Total Depenses Ordinaire"
-label_total_recette_extra = "Total Recettes Extraordinaire"
-label_total_depense_extra = "Total Depenses Extraordinaire"
-label_prev_year = "Année Précédente"
-label_measure = "Que voulez vous analyser?"
-label_settings_graph = "Quoi afficher sur le graphe?"
-label_graph = "Type de graphe"
-label_sort = "Ordonner par"
-list_labels_sort = ['Total décroissant', 'Total croissant', 'A-Z', 'Z-A']
+label_total_recette_ord = "Total Ordinary Revenue"
+label_total_depense_ord = "Total Ordinary Expense"
+label_total_recette_extra = "Total Extraordinary Revenue"
+label_total_depense_extra = "Total Extraordinary Expense"
+label_prev_year = "Comparison with previous year"
+label_measure = "What do you want to analyze?"
+label_settings_graph = "What to show on the graph?"
+label_graph = "Type of graph"
+label_sort = "Order by"
+list_labels_sort = ['Descending', 'Ascending', 'A-Z', 'Z-A']
 col_function = 1
 label_function = dfbo.columns[col_function]
 label_type = "Type"
-label_amount = "Montant"
+label_amount = "Amount"
 label_year = "Exercice"
+label_percent = "%"
+label_budget_types = ["ordinary", "extraordinary"]
+max_elmts_pie = 7
+label_new = "Open"
 
-
+# Customize layout of budget dashboard
 layout = dbc.Container([
     dbc.Row([
         dbc.Col([
             html.Div([
-                html.Br(),
-                html.A("Retour au menu", href='/', className="btn bglarge no-decor btn-success mr-3"),
+                html.A("Back", href='/', className="btn bglarge no-decor btn-success mr-3"),
                 #html.A("Partager", href='/', className="btn bglarge no-decor btn-primary mr-1"),
                 dbc.DropdownMenu(
-                    user_displays, label="Choississez Le Type d'Affichage", bs_size="sm", color="warning", className="btn no-decor round"
+                    user_displays, label="Select Display Type", bs_size="sm", color="warning", className="btn no-decor round mr-3"
                 ),
-                html.Span(id="display"),
+                html.A("Access Source Code", href='https://github.com/chokkipaterne/nbdash', target="_blank", id="sourcecode", style={"display": "none"}, className="btn bglarge no-decor btn-primary"),
             ]),
-            html.Br(),
-            ], xs=12, sm=12, md=12, lg=12, xl=12, className="mb-6 round center text-center")
+            ], xs=12, sm=12, md=12, lg=12, xl=12, className="mt-2 mb-2 round center text-center")
         ]
     ),
     dbc.Row([
@@ -107,11 +118,11 @@ layout = dbc.Container([
             dbc.Card(
                 [
                     dbc.CardBody([
-                            html.H5("NBDash - Budget de Namur",
+                            html.H5("NBDash - Namur Budget Dashboard",
                                         className='title-dash mb-2'),
-                            html.P("Ce tableau de bord présente les informations relatives au budget ordinaire et extra-ordinaire de la commune de Namur.",
+                            html.P("This dashboard presents information on the ordinary and extra-ordinary expenses/revenues of the commune of Namur.",
                                         className='desc-dash mb-4'),
-                            html.H5(["Type d'affichage: ",
+                            html.H5(["Display Type: ",
                             html.Span(id="display"),],
                                         className='sm-title mb-2'),
                         ]
@@ -122,7 +133,7 @@ layout = dbc.Container([
             dbc.Card(
                 [
                     dbc.CardBody([
-                        html.H5("Données utilisées",
+                        html.H5("Data Used",
                                     className='sm-title mb-2'),
                         html.Div(
                             [
@@ -130,23 +141,24 @@ layout = dbc.Container([
                                     [
                                         dcc.Link([
                                             "1. ",
-                                            "Namur-Budget Ordinaire par fonction",
+                                            "Namur-Ordinary budget by function",
                                         ], href='https://data.namur.be/explore/dataset/namur-budget-ordinaire-par-fonction/information/?disjunctive.fonctions', target="_blank", className="no-decor sm-font text-black"),
                                         html.Span(
                                             " ?",
                                             id="tooltip-target",
                                             style={"cursor": "pointer"},
                                         ),
+                                        html.Br(),
                                         html.Span([
-                                            'Dernière mise à jour: '
+                                            'Last update: '
                                             f'{retrieved_date}',
                                         ],className="spansm")
 
                                     ], className="sm-font text-black"
                                 ),
                                 dbc.Tooltip(
-                                    "Ce jeu de données reprend les différentes recettes et dépenses permettant "
-                                    "le fonctionnement courant de la Ville de Namur hors investissements.",
+                                    "This dataset includes the different revenues and expenses allowing "
+                                    "the current operation of the City of Namur excluding investments.",
                                     target="tooltip-target",
                                 ),
                             ]
@@ -155,22 +167,23 @@ layout = dbc.Container([
                             [
                                 html.P(
                                     [
-                                        dcc.Link("2. Namur-Budget Extraordinaire par fonction", href='https://data.namur.be/explore/dataset/namur-budget-extraordinaire-par-fonction/information/?disjunctive.fonctions', target="_blank", className="no-decor sm-font text-black"),
+                                        dcc.Link("2. Namur-Extraordinary budget by function", href='https://data.namur.be/explore/dataset/namur-budget-extraordinaire-par-fonction/information/?disjunctive.fonctions', target="_blank", className="no-decor sm-font text-black"),
                                         html.Span(
                                             " ?",
                                             id="tooltip-target1",
                                             style={"cursor": "pointer"},
                                         ),
+                                        html.Br(),
                                         html.Span([
-                                            'Dernière mise à jour: '
+                                            'Last update: '
                                             f'{retrieved_date}',
                                         ],className="spansm")
 
                                     ], className="sm-font text-black"
                                 ),
                                 dbc.Tooltip(
-                                    "Ce jeu de données reprend les différentes recettes et dépenses d’investissements de la Ville de Namur.  "
-                                    "Les dépenses représentent le montant de l’investissement quant aux recettes, elles représentent le type de financement réalisé pour pouvoir acquérir l’investissement correspondant.",
+                                    "This dataset includes the various revenues and expenses of the City of Namur's investments.  "
+                                    "The expenses represent the amount of the investment, while the revenues represent the type of financing carried out in order to acquire the corresponding investment.",
                                     target="tooltip-target1",
                                 ),
                             ]
@@ -183,16 +196,19 @@ layout = dbc.Container([
             dbc.Card(
                 [
                     dbc.CardBody([
-                            html.H5("Vos commentaires sont les bienvenus :)",
+                            html.H5("Give Feedback",
                                         className='sm-title mb-2'),
                             html.Div([
-                                html.A("Nous contacter", href='mailto:abiola-paterne.chokki@unamur.be', className="btn bglarge rounded no-decor btn-primary"),
-                            ], className="mb-2"),
-                            html.H5("Accès au code source",
-                                        className='sm-title mb-2'),
-                            html.Div([
-                                html.A("Github", href='https://github.com/chokkipaterne/nbdash', className="btn bglarge rounded no-decor btn-success"),
+                                dbc.Textarea(id="comments",className="mb-1", placeholder="Leave your comments to help improve the dashboard"),
+                                html.Small([
+                                "Please check previous comments below before adding your comment."
+                                ], className="spansm"),
+                                html.Br(),
+                                html.Button('Submit', id='submit-val', className="btn bglarge rounded no-decor btn-primary", n_clicks=0),
                             ], className="mb-4"),
+                          html.H5("Previous comments", className='sm-title mb-2'),
+                          html.Div(table_feedback, id="feedback"),
+                          html.Br(),
                         ]
                     ),
                 ], className="shadow"
@@ -206,14 +222,14 @@ layout = dbc.Container([
                             dbc.Col([
                                 html.Div([
                                     html.Br(),
-                                    html.Div("Budget ", style={"display": "inline"},className='title-dash mb-4'),
                                     dcc.Dropdown(
                                         id='budget-type', value=BUDGET_TYPES[0], clearable=False,
                                         persistence=True, persistence_type='session',
                                         options=[{'label': x, 'value': x} for x in BUDGET_TYPES],
-                                        placeholder="Choississez le type de budget",
+                                        placeholder="Choose the type of budget",
                                     ),
-                                    html.Div(" de l'année ", style={"display": "inline", "marginLeft": "10px"},className='title-dash mb-4'),
+                                    html.Div("budget", style={"display": "inline"},className='title-dash mb-4'),
+                                    html.Div(" of the year ", style={"display": "inline", "marginLeft": "10px"},className='title-dash mb-4'),
                                     dcc.Dropdown(
                                         id='budget-year', value=years[0], clearable=False,
                                         persistence=True, persistence_type='session',searchable=True,
@@ -225,14 +241,14 @@ layout = dbc.Container([
                         html.Br(),html.Br(),
                         html.Div(id='summary-result', className="center text-center"),
                         html.Div([
-                            html.H5("Analyse de ", style={"display": "inline"},
+                            html.H5("Analysis of ", style={"display": "inline"},
                                         className='sm-title mb-2'),
                             dcc.Dropdown(
                                 id='graph-drop', value=GRAPH_TYPES[0], clearable=False,
                                 persistence=True, persistence_type='session',searchable=True,
                                 options=[{'label': x, 'value': x} for x in GRAPH_TYPES]
                             ),
-                            html.H5(" par ", style={"display": "inline"},
+                            html.H5(" by ", style={"display": "inline"},
                                         className='sm-title mb-2'),
                             dcc.Dropdown(
                                 id='group-drop', value=GROUP_GRAPH_TYPES[0], clearable=False,
@@ -254,17 +270,17 @@ layout = dbc.Container([
                                     html.Button([
                                     html.Img(
                                         src="../assets/Bar150.png", className="btGraph mr-2"),
-                                    'Barre'
+                                    'Bar chart'
                                     ], id='barre', n_clicks_timestamp=0),
                                     html.Button([
                                     html.Img(
                                         src="../assets/Line150.png", className="btGraph mr-2"),
-                                    'Line'
+                                    'Line chart'
                                     ], id='line', n_clicks_timestamp=0, style={'display': 'block'}),
                                     html.Button([
                                     html.Img(
                                         src="../assets/Pie150.png", className="btGraph mr-2"),
-                                    'Camembert'
+                                    'Pie chart'
                                     ], id='camembert', n_clicks_timestamp=0),
                                 ], id="graph-btns"),
                                 ], id="div-graph", style= {'display': 'none'}),
@@ -386,8 +402,34 @@ layout = dbc.Container([
     )
 ], fluid=True)
 
+#register user feedback
+@app.callback(
+    Output(component_id='feedback', component_property='children'),
+    Output(component_id='comments', component_property='value'),
+    [Input('submit-val', 'n_clicks')],
+    [State(component_id='comments', component_property='value')]
+)
+def user_feedback(n_clicks, comments):
+    table_feedback = None
+    comments_value = ""
+    if n_clicks and comments and len(comments) > 0:
+        comments = comments.replace(";", ",")
+        feedback = datetime.today().strftime('%Y-%m-%d') + ": "+comments+";"+label_new
+        feedback_file = DATA_PATH.joinpath("feedback-file.csv")
+        f= open(feedback_file,"a+")
+        f.write("%s\r\n" % (feedback))
+        f.close()
+        dff = pd.read_csv(feedback_file, delimiter=";")
+        table = utils.feedback_table(dff)
+        table_feedback = [
+            table
+        ]
+    else:
+        raise dash.exceptions.PreventUpdate
 
-# update summary results
+    return table_feedback, comments_value
+
+# update summary results based on filters
 @app.callback(
     Output(component_id='summary-result', component_property='children'),
     Output(component_id='display', component_property='children'),
@@ -412,16 +454,17 @@ def update_summary(budget_type, budget_year, pasdutt, unpeu, biensure):
 
     if int(pasdutt) > int(unpeu) and int(pasdutt) > int(biensure):
         init_conf = "pasdutt"
-        current_display = "Simple"
+        current_display = "Simple (New to visualization)"
     elif int(unpeu) > int(pasdutt) and int(unpeu) > int(biensure):
         init_conf = "unpeu"
-        current_display = "Moins avancée"
+        current_display = "Less advanced (Need more control on data and visualizations displayed)"
     elif int(biensure) > int(pasdutt) and int(biensure) > int(unpeu):
         init_conf = "biensure"
-        current_display = "Avancée"
+        current_display = "Advanced (Need to edit visualizations)"
     else:
         init_conf = "pasdutt"
-        current_display = "Simple"
+        current_display = "Simple (New to visualization)"
+
 
     if budget_type == BUDGET_TYPES[0]:
         df = dfbo.copy()
@@ -458,23 +501,29 @@ def update_summary(budget_type, budget_year, pasdutt, unpeu, biensure):
     class_prev_rec = "none"
     class_prev_dep = "none"
 
-    if diff_rec != 0:
-        show_diff_rec = utils.show_percent(float(diff_rec)*100.0/float(sum_rec_dep_currrent_year[col_recette_total]))
+    if diff_rec != 0 and sum_rec_dep_prev_year[col_recette_total] != 0:
+        show_diff_rec = utils.show_percent(float(diff_rec)*100.0/float(sum_rec_dep_prev_year[col_recette_total]))
         if diff_rec > 0:
             class_prev_rec = "greenspan"
         if diff_rec < 0:
             class_prev_rec = "redspan"
     else:
-        show_diff_rec = utils.show_nb_with_currency(diff_rec)
+        if sum_rec_dep_prev_year[col_recette_total] == 0:
+            show_diff_rec = "~"
+        else:
+            show_diff_rec = utils.show_nb_with_currency(diff_rec)
 
-    if diff_dep != 0:
-        show_diff_dep = utils.show_percent(float(diff_dep)*100.0/float(sum_rec_dep_currrent_year[col_depense_total]))
+    if diff_dep != 0 and sum_rec_dep_prev_year[col_depense_total] != 0:
+        show_diff_dep = utils.show_percent(float(diff_dep)*100.0/float(sum_rec_dep_prev_year[col_depense_total]))
         if diff_dep > 0:
             class_prev_dep = "greenspan"
         if diff_dep < 0:
             class_prev_dep = "redspan"
     else:
-        show_diff_dep = utils.show_nb_with_currency(diff_dep)
+        if sum_rec_dep_prev_year[col_depense_total] == 0:
+            show_diff_dep = "~"
+        else:
+            show_diff_dep = utils.show_nb_with_currency(diff_dep)
 
     show_rec = utils.show_nb_with_currency(sum_rec_dep_currrent_year[col_recette_total])
     show_dep = utils.show_nb_with_currency(sum_rec_dep_currrent_year[col_depense_total])
@@ -535,6 +584,7 @@ def update_summary(budget_type, budget_year, pasdutt, unpeu, biensure):
         ], align="start", style={"justify-content": "center"}),
     return sum_result, current_display
 
+#show or hide filters based on display type
 @app.callback(
     Output(component_id='left-graph', component_property='style'),
     Output(component_id='right-graph', component_property='style'),
@@ -552,6 +602,8 @@ def update_summary(budget_type, budget_year, pasdutt, unpeu, biensure):
     Output(component_id='list-function-filt', component_property='style'),
     Output(component_id='div-sort', component_property='style'),
     Output(component_id='interpret-graph', component_property='style'),
+    Output(component_id='sourcecode', component_property='style'),
+
 
     Input(component_id='budget-type', component_property='value'),
     Input(component_id='budget-year', component_property='value'),
@@ -583,6 +635,7 @@ def update_filters(budget_type, budget_year, pasdutt, unpeu, biensure, graph_dro
     display_list_function_filt = {'display': 'none'}
     display_div_sort = {'display': 'none'}
     display_interpret_graph = {'display': 'none'}
+    display_sourcecode = {'display': 'none'}
 
     if budget_type is None or budget_year is None:
         raise dash.exceptions.PreventUpdate
@@ -593,6 +646,7 @@ def update_filters(budget_type, budget_year, pasdutt, unpeu, biensure, graph_dro
         init_conf = "unpeu"
     elif int(biensure) > int(pasdutt) and int(biensure) > int(unpeu):
         init_conf = "biensure"
+        display_sourcecode = {'display': 'inline-block'}
     else:
         init_conf = "pasdutt"
 
@@ -660,9 +714,9 @@ def update_filters(budget_type, budget_year, pasdutt, unpeu, biensure, graph_dro
                     #depenses
                     display_list_depense_extra_filt = {'display': 'block'}
 
-    return display_left, display_right, display_div_graph, display_label_meas,display_label_set_graph,display_list_recette_ord_meas,display_list_recette_ord_filt,display_list_depense_ord_meas,display_list_depense_ord_filt,display_list_recette_extra_meas,display_list_recette_extra_filt,display_list_depense_extra_meas,display_list_depense_extra_filt,display_list_function_filt,display_div_sort,display_interpret_graph
+    return display_left, display_right, display_div_graph, display_label_meas,display_label_set_graph,display_list_recette_ord_meas,display_list_recette_ord_filt,display_list_depense_ord_meas,display_list_depense_ord_filt,display_list_recette_extra_meas,display_list_recette_extra_filt,display_list_depense_extra_meas,display_list_depense_extra_filt,display_list_function_filt,display_div_sort,display_interpret_graph,display_sourcecode
 
-
+#Update visualizations based on filters and display type
 @app.callback(
     Output(component_id='graph-result', component_property='children'),
     Output(component_id='interpret-graph', component_property='children'),
@@ -703,12 +757,14 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
     label_X = None
     label_Y = None
     title_graph = None
+    add_suffix = ""
     recette_start = None
     recette_end = None
     depense_start = None
     depense_end = None
     fig = None
     params_fig = {}
+    id_graph = "graph"
     config_pasdutt = {
       'displayModeBar': True,
       'displaylogo': False,
@@ -726,7 +782,7 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
       'displayModeBar': True,
       'displaylogo': False,
       'plotlyServerURL': "https://chart-studio.plotly.com",
-      'linkText': 'Modifier le graphe',
+      'linkText': 'Edit chart',
       'modeBarButtonsToRemove':['zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines', 'resetViews',
       'hoverCompareCartesian', 'hoverClosestGl2d', 'hoverClosestCartesian', 'hoverCompareCartesian']
     }
@@ -762,6 +818,7 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
         init_conf = "unpeu"
     elif int(biensure) > int(pasdutt) and int(biensure) > int(unpeu):
         init_conf = "biensure"
+        id_graph = "advgraph"
     else:
         init_conf = "pasdutt"
 
@@ -786,8 +843,8 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
             #type
             label_X = label_type
             label_Y = label_amount
-        title_graph = label_Y + " par "+ label_X + " au cours de l'année "+ str(budget_year)
-        interpret_graph.append("Ce graphe présente "+ title_graph+ ". ")
+        title_graph = label_budget_types[0] + " " + label_Y + " by "+ label_X + " during the year "+ str(budget_year)
+        interpret_graph.append("This graph presents "+ title_graph+ ". ")
         interpret_graph.append(html.Br())
 
         recette_start = recette_ord_start
@@ -813,8 +870,8 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
             label_X = label_type
             label_Y = label_amount
 
-        title_graph = label_Y + " par "+ label_X + " au cours de l'année "+ str(budget_year)
-        interpret_graph.append("Ce graphe présente "+ title_graph+ ". ")
+        title_graph = label_budget_types[1] + " " +label_Y + " by "+ label_X + " during the year "+ str(budget_year)
+        interpret_graph.append("This graph presents "+ title_graph+ ". ")
         interpret_graph.append(html.Br())
 
         recette_start = recette_extra_start
@@ -868,12 +925,12 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
 
             nb_rows = df_group.shape[0]
             interpret_graph.append(html.B(str(df_group.at[nb_rows-1,df_group.columns[0]])))
-            interpret_graph.append(" a la valeur la plus élevée ")
+            interpret_graph.append(" has the highest value ")
             interpret_graph.append(html.B(str(utils.show_nb_with_currency(df_group.at[nb_rows-1,df_group.columns[1]]))))
             interpret_graph.append(html.Br())
             if nb_rows-1 != 0:
                 interpret_graph.append(html.B(str(df_group.at[0,df_group.columns[0]])))
-                interpret_graph.append(" a la valeur la plus faible ")
+                interpret_graph.append(" has the lowest value ")
                 interpret_graph.append(html.B(str(utils.show_nb_with_currency(df_group.at[0,df_group.columns[1]]))))
 
             params_fig["y"] = df_group.columns[0]
@@ -907,12 +964,12 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
         if df_group is not None and df_group.shape[0] != 0:
             graph_result = [
                 html.P(title_graph, style={"textAlign": "center"}),
-                dcc.Graph(id="graph", figure=fig, config=config_pasdutt)
+                dcc.Graph(id=id_graph, figure=fig, config=config_pasdutt)
             ]
         else:
             graph_result = [
                 html.P(title_graph, style={"textAlign": "center"}),
-                html.P("Aucune donnée à tracer", style={"textAlign": "center", "color": "red"}),
+                html.P("No data to plot", style={"textAlign": "center", "color": "red"}),
             ]
     else:
         meas_y = None
@@ -925,21 +982,26 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
                         meas_y = recette_ord_meas
                         index = df.columns.tolist().index(recette_ord_meas)
                         label_Y = labels_cols_ord[index]
+                        add_suffix = " " + label_budget_types[0]
                     elif budget_type == BUDGET_TYPES[1]:
                         meas_y = recette_extra_meas
                         index = df.columns.tolist().index(recette_extra_meas)
                         label_Y = labels_cols_extra[index]
+                        add_suffix = " " + label_budget_types[1]
                 elif graph_drop == GRAPH_TYPES[1]:
                     #depenses
                     if budget_type == BUDGET_TYPES[0]:
                         meas_y = depense_ord_meas
                         index = df.columns.tolist().index(depense_ord_meas)
                         label_Y = labels_cols_ord[index]
+                        add_suffix = " " + label_budget_types[0]
                     elif budget_type == BUDGET_TYPES[1]:
                         meas_y = depense_extra_meas
                         index = df.columns.tolist().index(depense_extra_meas)
                         label_Y = labels_cols_extra[index]
-                title_graph = label_Y + " par "+ label_X + " au cours de l'année "+ str(budget_year)
+                        add_suffix = " " + label_budget_types[1]
+
+                title_graph = add_suffix + " "+ label_Y + " by "+ label_X + " during the year "+ str(budget_year)
 
             df_group = None
             query_filter = (df_filter[col_exercise] == int(budget_year))
@@ -1014,12 +1076,12 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
 
                 #nb_rows = df_group.shape[0]
                 #interpret_graph.append(html.B(str(df_group.at[nb_rows-1,df_group.columns[0]])))
-                #interpret_graph.append(" a la valeur la plus élevée ")
+                #interpret_graph.append(" has the highest value ")
                 #interpret_graph.append(html.B(str(utils.show_nb_with_currency(df_group.at[nb_rows-1,df_group.columns[1]]))))
                 #interpret_graph.append(html.Br())
                 #if nb_rows-1 != 0:
                 #    interpret_graph.append(html.B(str(df_group.at[0,df_group.columns[0]])))
-                #    interpret_graph.append(" a la valeur la plus faible ")
+                #    interpret_graph.append(" has the lowest value ")
                 #    interpret_graph.append(html.B(str(utils.show_nb_with_currency(df_group.at[0,df_group.columns[1]]))))
 
 
@@ -1045,14 +1107,25 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
                     fig = px.bar(**params_fig)
 
                 elif graph_type == 'camembert':
-                    table = utils.create_table(df_group,label_X,label_Y)
+                    total_col = df_group[df_group.columns[1]].sum()
+                    if total_col == 0:
+                        table = utils.create_table(df_group,label_X,label_Y)
+                    else:
+                        df_group[label_percent] = (df_group[df_group.columns[1]] / total_col) * 100
+                        df_group[label_percent] = df_group[label_percent].round(decimals=2)
+                        table = utils.create_table(df_group,label_X,label_Y, None, label_percent)
+
                     df_group = df_group.loc[(df_group[df_group.columns[1]] != 0)]
                     params_fig["names"] = df_group.columns[0]
                     params_fig["values"] = df_group.columns[1]
                     params_fig["data_frame"] = df_group
                     params_fig["color_discrete_sequence"] = px.colors.sequential.RdBu
-                    params_fig["height"] = 400
+                    params_fig["height"] = 500
                     fig = px.pie(**params_fig)
+                    if df_group is not None and df_group.shape[0] <= max_elmts_pie:
+                        fig.update_traces(textposition='inside', textinfo='label+percent')
+                    else:
+                        fig.update_traces(textinfo='none')
 
                 fig.update_layout(showlegend=True,
                  xaxis=dict(
@@ -1074,17 +1147,17 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
             if df_group is not None and df_group.shape[0] != 0:
                 graph_result = [
                     html.P(title_graph, style={"textAlign": "center"}),
-                    dcc.Graph(id="graph", figure=fig, config=config),
+                    dcc.Graph(id=id_graph, figure=fig, config=config),
                     html.Br(),
-                    html.P("Données affichées sous forme de tableau", style={"textAlign": "center"}),
+                    html.P("Data displayed in table format", style={"textAlign": "center"}),
                     table
                 ]
             else:
                 graph_result = [
                     html.P(title_graph, style={"textAlign": "center"}),
-                    html.P("Aucune donnée à tracer", style={"textAlign": "center", "color": "red"}),
+                    html.P("No data to plot", style={"textAlign": "center", "color": "red"}),
                     html.Br(),
-                    html.P("Données affichées sous forme de tableau", style={"textAlign": "center"}),
+                    html.P("Data displayed in table format", style={"textAlign": "center"}),
                     table
                 ]
         elif graph_type == 'line':
@@ -1096,21 +1169,25 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
                         meas_y = recette_ord_meas
                         index = df.columns.tolist().index(recette_ord_meas)
                         label_Y = labels_cols_ord[index]
+                        add_suffix = " " + label_budget_types[0]
                     elif budget_type == BUDGET_TYPES[1]:
                         meas_y = recette_extra_meas
                         index = df.columns.tolist().index(recette_extra_meas)
                         label_Y = labels_cols_extra[index]
+                        add_suffix = " " + label_budget_types[1]
                 elif graph_drop == GRAPH_TYPES[1]:
                     #depenses
                     if budget_type == BUDGET_TYPES[0]:
                         meas_y = depense_ord_meas
                         index = df.columns.tolist().index(depense_ord_meas)
                         label_Y = labels_cols_ord[index]
+                        add_suffix = " " + label_budget_types[0]
                     elif budget_type == BUDGET_TYPES[1]:
                         meas_y = depense_extra_meas
                         index = df.columns.tolist().index(depense_extra_meas)
                         label_Y = labels_cols_extra[index]
-                title_graph = label_Y + " par "+ label_X + " au cours du temps"
+                        add_suffix = " " + label_budget_types[1]
+                title_graph = add_suffix + " " + label_Y  + " by "+ label_X + " over time"
 
             df_group = None
             query_filter = None
@@ -1183,19 +1260,18 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
             if df_group is not None and df_group.shape[0] != 0:
                 graph_result = [
                     html.P(title_graph, style={"textAlign": "center"}),
-                    dcc.Graph(id="graph", figure=fig, config=config),
+                    dcc.Graph(id=id_graph, figure=fig, config=config),
                     html.Br(),
-                    html.P("Données affichées sous forme de tableau", style={"textAlign": "center"}),
+                    html.P("Data displayed in table format", style={"textAlign": "center"}),
                     table
                 ]
             else:
                 graph_result = [
                     html.P(title_graph, style={"textAlign": "center"}),
-                    html.P("Aucune donnée à tracer", style={"textAlign": "center", "color": "red"}),
+                    html.P("No data to plot", style={"textAlign": "center", "color": "red"}),
                     html.Br(),
-                    html.P("Données affichées sous forme de tableau", style={"textAlign": "center"}),
+                    html.P("Data displayed in table format", style={"textAlign": "center"}),
                     table
                 ]
-            print("I am here")
 
     return graph_result, interpret_graph, display_line

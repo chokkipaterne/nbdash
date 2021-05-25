@@ -15,8 +15,9 @@ body, html{
   font-weight: 520;
 }
 .bgGray{
-  background: #dddddd !important;
-  padding:2% 25px;
+  height: 95vh;
+  background-image: url("budget_bg.jpg")  !important;
+  background-size: cover !important;
 }
 .mgmail{
   margin-bottom: 60px;
@@ -218,4 +219,15 @@ label{
 }
 .author{
   font-size: 1.1rem;
+}
+#graph .js-plot-link-container{
+  display: none !important;
+}
+#advanced-graph .js-plot-link-container{
+    display: block !important;
+}
+
+#feedback{
+  width: 100%;
+  overflow-x: auto !important;
 }
