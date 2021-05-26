@@ -18,9 +18,6 @@ The dashboard was created to evaluate whether citizens are more receptive to wel
 ![HomePage](/assets/Homepage_NBDash.png)
 HomePage Interface of NBDash.
 
-![NBDash Interface for simple display](/assets/full_page_simple_nbdash.png)
-NBDash Interface for simple display.
-
 ![NBDash Interface for advanced display](/assets/full_page_nbdash.png)
 NBDash Interface for advanced display.
 
