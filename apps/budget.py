@@ -45,23 +45,23 @@ init_conf = "pasdutt"
 init_timestamps = 0
 
 
-labels_cols_ord = ['fiscal year', 'function', 'Recette/Prestations', 'Recette/Transferts',
-       'Recette/Dette', 'revenue/total', 'Recette/Prélèvements',
-       'Recette/TotalAvecPrélèvement', 'Dépenses/Personnel',
-       'Dépenses/Fonctionnement', 'Dépenses/Transferts', 'Dépenses/Dette',
-       'expense/total', 'Dépenses/Prélèvements',
-       'Dépenses/TotalAprèsPrélèvements']
+labels_cols_ord = ['fiscal year', 'function', 'service revenue', 'transfer revenue',
+       'debt revenue', 'total revenue', 'tax revenue',
+       'total revenue with tax', 'staff expense',
+       'operating expense', 'transfer expense', 'debt expense',
+       'total expense', 'tax expense',
+       'total expense with tax']
 recette_ord_start = 2
 recette_ord_end = 8
 depense_ord_start = 8
 depense_ord_end = 15
 
-labels_cols_extra = ['fiscal year', 'function', 'Recettes/Transferts',
-       'Recettes/Investissements', 'Recettes/Dette', 'revenue/total',
-       'Recettes/Prélèvements', 'Recettes/TotalAprèsPrélèvements',
-       'Dépenses/Transferts', 'Dépenses/Investissements', 'Dépenses/Dette',
-       'expense/total', 'Dépenses/Prélèvements',
-       'Dépenses/TotalAprèsPrélèvements']
+labels_cols_extra = ['fiscal year', 'function', 'transfer revenue',
+       'investment revenue', 'debt revenue', 'total revenue',
+       'tax revenue', 'total revenue with tax',
+       'transfer expense', 'investment expense', 'debt expense',
+       'total expense ', 'tax expense',
+       'total expense with tax']
 recette_extra_start = 2
 recette_extra_end = 8
 depense_extra_start = 8
@@ -90,13 +90,14 @@ label_sort = "Order by"
 list_labels_sort = ['Descending', 'Ascending', 'A-Z', 'Z-A']
 col_function = 1
 label_function = dfbo.columns[col_function]
-label_type = "Type"
-label_amount = "Amount"
-label_year = "Exercice"
+label_type = "type"
+label_amount = "amount"
+label_year = "fiscal year"
 label_percent = "%"
 label_budget_types = ["ordinary", "extraordinary"]
 max_elmts_pie = 7
 label_new = "Open"
+terms = utils.terminology()
 
 # Customize layout of budget dashboard
 layout = dbc.Container([
@@ -120,11 +121,23 @@ layout = dbc.Container([
                     dbc.CardBody([
                             html.H5("NBDash - Namur Budget Dashboard",
                                         className='title-dash mb-2'),
-                            html.P("This dashboard presents information on the ordinary and extra-ordinary expenses/revenues of the commune of Namur.",
+                            html.P("This dashboard presents information on the ordinary and extraordinary expenses/revenues of the commune of Namur.",
                                         className='desc-dash mb-4'),
                             html.H5(["Display Type: ",
                             html.Span(id="display"),],
                                         className='sm-title mb-2'),
+                        ]
+                    ),
+                ], className="shadow"
+            ),
+            html.Br(),
+            dbc.Card(
+                [
+                    dbc.CardBody([
+                            html.H5("Terminology",
+                                        className='title-dash mb-2'),
+                            html.Div(terms
+                            ),
                         ]
                     ),
                 ], className="shadow"
@@ -229,7 +242,7 @@ layout = dbc.Container([
                                         placeholder="Choose the type of budget",
                                     ),
                                     html.Div("budget", style={"display": "inline"},className='title-dash mb-4'),
-                                    html.Div(" of the year ", style={"display": "inline", "marginLeft": "10px"},className='title-dash mb-4'),
+                                    html.Div(" during the fiscal year ", style={"display": "inline", "marginLeft": "10px"},className='title-dash mb-4'),
                                     dcc.Dropdown(
                                         id='budget-year', value=years[0], clearable=False,
                                         persistence=True, persistence_type='session',searchable=True,
@@ -843,7 +856,7 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
             #type
             label_X = label_type
             label_Y = label_amount
-        title_graph = label_budget_types[0] + " " + label_Y + " by "+ label_X + " during the year "+ str(budget_year)
+        title_graph = label_budget_types[0] + " " + label_Y + " by "+ label_X + " during the fiscal year "+ str(budget_year)
         interpret_graph.append("This graph presents "+ title_graph+ ". ")
         interpret_graph.append(html.Br())
 
@@ -870,7 +883,7 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
             label_X = label_type
             label_Y = label_amount
 
-        title_graph = label_budget_types[1] + " " +label_Y + " by "+ label_X + " during the year "+ str(budget_year)
+        title_graph = label_budget_types[1] + " " +label_Y + " by "+ label_X + " during the fiscal year "+ str(budget_year)
         interpret_graph.append("This graph presents "+ title_graph+ ". ")
         interpret_graph.append(html.Br())
 
@@ -1001,7 +1014,7 @@ depense_ord_filt,recette_extra_filt,depense_extra_filt,ord_drop):
                         label_Y = labels_cols_extra[index]
                         add_suffix = " " + label_budget_types[1]
 
-                title_graph = add_suffix + " "+ label_Y + " by "+ label_X + " during the year "+ str(budget_year)
+                title_graph = add_suffix + " "+ label_Y + " by "+ label_X + " during the fiscal year "+ str(budget_year)
 
             df_group = None
             query_filter = (df_filter[col_exercise] == int(budget_year))

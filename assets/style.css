@@ -231,3 +231,18 @@ label{
   width: 100%;
   overflow-x: auto !important;
 }
+.tag{
+  padding: 5px;
+  line-height: 16px;
+  color: white !important;
+  font-size: 0.86rem;
+  margin-right: 7px;
+  background: #28a745;
+}
+.text-right{
+  text-align: right;
+}
+hr{
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+}

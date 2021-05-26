@@ -2,6 +2,7 @@ import math
 import dash_table
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_bootstrap_components as dbc
 import pandas as pd
 
 
@@ -98,3 +99,116 @@ def feedback_table(df):
         html.Div(id='datatable-feedback-container')
     ])
     return table
+
+def terminology():
+    terms = [
+        html.Span(
+            "ordinary buget",
+            id="term1",
+            style={"cursor": "pointer"},
+            className="tag"
+        ),
+        dbc.Tooltip(
+            "revenues and expenses that occur at least once per fiscal year and provide for regular revenues and operations.",
+            target="term1",
+        ),
+        html.Span(
+            "service revenue",
+            id="term3",
+            style={"cursor": "pointer"},
+            className="tag"
+        ),
+        dbc.Tooltip(
+            "revenues for which the municipality provides a work, supply or service in return.",
+            target="term3",
+        ),
+        html.Span(
+            "transfer revenue",
+            id="term4",
+            style={"cursor": "pointer"},
+            className="tag"
+        ),
+        dbc.Tooltip(
+            "revenues for which the municipalities do not contribute directly.",
+            target="term4",
+        ),
+        html.Span(
+            "debt revenue",
+            id="term5",
+            style={"cursor": "pointer"},
+            className="tag"
+        ),
+        dbc.Tooltip(
+            "revenues from the Commune's receivables and assets.",
+            target="term5",
+        ),
+        html.Span(
+            "staff expense",
+            id="term6",
+            style={"cursor": "pointer"},
+            className="tag"
+        ),
+        dbc.Tooltip(
+            "salaries of the municipal staff (statutory and contractual) as well as the agents.",
+            target="term6",
+        ),
+        html.Span(
+            "operating expense",
+            id="term7",
+            style={"cursor": "pointer"},
+            className="tag"
+        ),
+        dbc.Tooltip(
+            "expenses essential to the proper functioning of the Commune, with the exception of personnel expenses.",
+            target="term7",
+        ),
+        html.Span(
+            "transfer expense",
+            id="term8",
+            style={"cursor": "pointer"},
+            className="tag"
+        ),
+        dbc.Tooltip(
+            "the legally obligatory financial interventions (e.g., hospital and public utilities deficits, police zones) and optional subsidies to various sports, cultural and philanthropic associations.",
+            target="term8",
+        ),
+        html.Span(
+            "debt expense",
+            id="term9",
+            style={"cursor": "pointer"},
+            className="tag"
+        ),
+        dbc.Tooltip(
+            "the repayment of the debt (capital and interest), whether it is borne by the municipality, a third party or the higher authority.",
+            target="term9",
+        ),
+        html.Br(),
+        html.Hr(),
+        html.Span(
+            "extraordinary buget",
+            id="term2",
+            style={"cursor": "pointer"},
+            className="tag"
+        ),
+        dbc.Tooltip(
+            "exceptional revenues and expenses relating to investments: major repairs to buildings or roads, purchases of buildings, etc.",
+            target="term2",
+        ),
+        html.Span(
+            "investment revenue",
+            id="term10",
+            style={"cursor": "pointer"},
+            className="tag"
+        ),
+        dbc.Tooltip(
+            "revenues from the municipality's own funds, e.g., from the sale of property, from planning charges",
+            target="term10",
+        ),
+        html.P(
+            [
+            dcc.Link([
+                "More details",
+            ], href='http://www.ixelles.be/site/270-Budget-communal', target="_blank", className="spansm text-right no-decor sm-font text-blue"),
+            ], className="text-right"),
+    ]
+    return terms
