@@ -18,7 +18,7 @@ PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath("../datasets").resolve()
 BUDGET_TYPES = ["ordinary", "extraordinary"]
 GROUP_GRAPH_TYPES = ["function", "type"]
-GRAPH_TYPES = ["revenues", "expenses"]
+GRAPH_TYPES = ["revenue", "expense"]
 
 #read files
 dfbo = pd.read_csv(DATA_PATH.joinpath("namur-budget-ordinaire-par-fonction.csv"), delimiter=";")

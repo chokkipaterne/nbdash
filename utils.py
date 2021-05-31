@@ -208,7 +208,7 @@ def terminology():
             [
             dcc.Link([
                 "More details",
-            ], href='http://www.ixelles.be/site/270-Budget-communal', target="_blank", className="spansm text-right no-decor sm-font text-blue"),
+            ], href='https://translate.google.com/translate?sl=fr&tl=en&u=http://www.ixelles.be/site/270-Budget-communal', target="_blank", className="spansm text-right no-decor sm-font text-blue"),
             ], className="text-right"),
     ]
     return terms
