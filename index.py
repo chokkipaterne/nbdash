@@ -19,6 +19,10 @@ app.layout = html.Div([
     ]),
 ])
 
+#fix slow loading issue
+app.scripts.config.serve_locally = True
+app.css.config.serve_locally = True
+
 index_page = dbc.Container([
     dbc.Row([
         dbc.Col([
@@ -35,7 +39,7 @@ index_page = dbc.Container([
             html.Br(),
             html.Br(),
             html.Div([
-                dcc.Link("Get started", href='/apps/budget', className="btn bglarge no-decor btn-success"),
+                html.A("Get started", href='/apps/budget', className="btn bglarge no-decor btn-success"),
             ], className="mb-4"),
             html.Br(),
             html.Br(),

@@ -104,10 +104,10 @@ layout = dbc.Container([
     dbc.Row([
         dbc.Col([
             html.Div([
-                html.A("Back", href='/', className="btn bglarge no-decor btn-success mr-3"),
+                html.A("Back", href='/', className="btn bglarge no-decor btn-danger mr-3"),
                 #html.A("Partager", href='/', className="btn bglarge no-decor btn-primary mr-1"),
                 dbc.DropdownMenu(
-                    user_displays, label="Select Display Type", bs_size="sm", color="warning", className="btn no-decor round mr-3"
+                    user_displays, label="Change Display Type", bs_size="sm", color="success", className="btn no-decor round mr-3 dt-button"
                 ),
                 html.A("Access Source Code", href='https://github.com/chokkipaterne/nbdash', target="_blank", id="sourcecode", style={"display": "none"}, className="btn bglarge no-decor btn-primary"),
             ]),
@@ -146,7 +146,10 @@ layout = dbc.Container([
             dbc.Card(
                 [
                     dbc.CardBody([
-                        html.H5("Data Used",
+                        html.H5(["Data Used",
+                        html.Span(["  (Source: Namur Open Data Portal)"
+                        ],className="spanmd"),]
+                        ,
                                     className='sm-title mb-2'),
                         html.Div(
                             [
@@ -155,7 +158,7 @@ layout = dbc.Container([
                                         dcc.Link([
                                             "1. ",
                                             "Namur-Ordinary budget by function",
-                                        ], href='https://data.namur.be/explore/dataset/namur-budget-ordinaire-par-fonction/information/?disjunctive.fonctions', target="_blank", className="no-decor sm-font text-black"),
+                                        ], href='https://translate.google.com/translate?sl=fr&tl=en&u=https://data.namur.be/explore/dataset/namur-budget-ordinaire-par-fonction/information/?disjunctive.fonctions', target="_blank", className="no-decor sm-font text-blue"),
                                         html.Span(
                                             " ?",
                                             id="tooltip-target",
@@ -165,7 +168,16 @@ layout = dbc.Container([
                                         html.Span([
                                             'Last update: '
                                             f'{retrieved_date}',
-                                        ],className="spansm")
+                                        ],className="spansm"),
+                                        html.Br(),
+                                        html.B([
+                                            'Data Quality: 75%'
+                                        ],className="spanmd"),
+                                        html.Span(
+                                            " ?",
+                                            id="tooltipq-target",
+                                            style={"cursor": "pointer"},
+                                        ),
 
                                     ], className="sm-font text-black"
                                 ),
@@ -174,13 +186,26 @@ layout = dbc.Container([
                                     "the current operation of the City of Namur excluding investments.",
                                     target="tooltip-target",
                                 ),
+                                dbc.Tooltip([
+                                    "No missing values: 100%",
+                                    html.Br(),
+                                    "Data Information (title, description, modified data, update frequency): 100%",
+                                    html.Br(),
+                                    "Column titles: 100%",
+                                    html.Br(),
+                                    "Column Descriptions: 0%",
+                                    html.Br(),
+                                    "Average Quality: 75%"],
+                                    target="tooltipq-target",
+                                ),
                             ]
                         ),
+                        html.Hr(),
                         html.Div(
                             [
                                 html.P(
                                     [
-                                        dcc.Link("2. Namur-Extraordinary budget by function", href='https://data.namur.be/explore/dataset/namur-budget-extraordinaire-par-fonction/information/?disjunctive.fonctions', target="_blank", className="no-decor sm-font text-black"),
+                                        dcc.Link("2. Namur-Extraordinary budget by function", href='https://translate.google.com/translate?sl=fr&tl=en&u=https://data.namur.be/explore/dataset/namur-budget-extraordinaire-par-fonction/information/?disjunctive.fonctions', target="_blank", className="no-decor sm-font text-blue"),
                                         html.Span(
                                             " ?",
                                             id="tooltip-target1",
@@ -190,7 +215,16 @@ layout = dbc.Container([
                                         html.Span([
                                             'Last update: '
                                             f'{retrieved_date}',
-                                        ],className="spansm")
+                                        ],className="spansm"),
+                                        html.Br(),
+                                        html.B([
+                                            'Data Quality: 75%'
+                                        ],className="spanmd"),
+                                        html.Span(
+                                            " ?",
+                                            id="tooltipq-target1",
+                                            style={"cursor": "pointer"},
+                                        ),
 
                                     ], className="sm-font text-black"
                                 ),
@@ -198,6 +232,18 @@ layout = dbc.Container([
                                     "This dataset includes the various revenues and expenses of the City of Namur's investments.  "
                                     "The expenses represent the amount of the investment, while the revenues represent the type of financing carried out in order to acquire the corresponding investment.",
                                     target="tooltip-target1",
+                                ),
+                                dbc.Tooltip([
+                                    "No missing values: 100%",
+                                    html.Br(),
+                                    "Data Information (title, description, modified data, update frequency): 100%",
+                                    html.Br(),
+                                    "Column titles: 100%",
+                                    html.Br(),
+                                    "Column Descriptions: 0%",
+                                    html.Br(),
+                                    "Average Quality: 75%"],
+                                    target="tooltipq-target1",
                                 ),
                             ]
                         )

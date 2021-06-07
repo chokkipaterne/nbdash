@@ -246,3 +246,10 @@ hr{
   margin-top: 1rem !important;
   margin-bottom: 1rem !important;
 }
+.text-blue{
+  color: blue !important;
+}
+
+.spanmd{
+  font-size: 1.05rem;
+}
