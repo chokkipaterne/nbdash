@@ -105,7 +105,14 @@ terms = utils.terminology()
 layout = dbc.Container([
     dbc.Row([
         dbc.Col([
-
+            html.Div([
+                #html.A("Back", href='/', className="btn bglarge no-decor btn-danger mr-3"),
+                #html.A("Partager", href='/', className="btn bglarge no-decor btn-primary mr-1"),
+                dbc.DropdownMenu(
+                    user_displays, label="Change Display Type", bs_size="sm", color="success", className="btn no-decor round mr-3 dt-button"
+                ),
+                html.A("Access Source Code", href='https://github.com/chokkipaterne/nbdash', target="_blank", id="sourcecode", style={"display": "none"}, className="btn bglarge no-decor btn-primary"),
+            ]),
             ], xs=12, sm=12, md=12, lg=12, xl=12, className="mt-2 mb-2 round center text-center")
         ]
     ),
@@ -114,206 +121,160 @@ layout = dbc.Container([
             dbc.Card(
                 [
                     dbc.CardBody([
-                            html.H4("NBDash - Namur Budget Dashboard",
-                                        className='center text-center mb-2'),
+                            html.H5("NBDash - Namur Budget Dashboard",
+                                        className='title-dash mb-2'),
                             html.P("This dashboard presents information on the ordinary and extraordinary expenses/revenues of the commune of Namur.",
                                         className='desc-dash mb-4'),
-                            html.P("Review the different features of this dashboard by switching display type (e.g., simple for novice users in visualization, less advanced for users who more control on data and visualizations displayed, etc) and filters (e.g., year, type of budget (ordinary or extraordinary), etc).", className='red mb-1'),
                             html.H5(["Display Type: ",
                             html.Span(id="display"),],
-                                        className='sm-title mb-1'),
-
-                            html.Div([
-                                #html.A("Back", href='/', className="btn bglarge no-decor btn-danger mr-3"),
-                                #html.A("Partager", href='/', className="btn bglarge no-decor btn-primary mr-1"),
-                                dbc.Button("Give Feedback", id="open-feedback", className="btn btn-success no-decor  mr-3 dt-button me-1", n_clicks=0),
-                                dbc.Button("Terminology", id="open-terminology", className="btn btn-success no-decor  mr-3 dt-button me-1", n_clicks=0),
-                                dbc.Button("Open Data Used", id="open-dataused", className="btn btn-success no-decor  mr-1 dt-button me-1", n_clicks=0),
-                                dbc.Modal(
-                                    [
-                                        dbc.ModalHeader("Give Feedback"),
-                                        dbc.ModalBody([
-                                                html.Div([
-                                                    dbc.Textarea(id="comments",className="mb-1", placeholder="Leave your comments to help improve the dashboard"),
-                                                    html.Small([
-                                                    "Please check previous comments below before adding your comment."
-                                                    ], className="spansm"),
-                                                    html.Br(),
-                                                    html.Button('Submit', id='submit-val', className="btn bglarge rounded no-decor btn-primary", n_clicks=0),
-                                                ], className="mb-4"),
-                                              html.H5("Previous comments", className='sm-title mb-2'),
-                                              html.Div(table_feedback, id="feedback"),
-                                              html.Br(),
-                                            ]
-                                        ),
-                                        dbc.ModalFooter(
-                                            dbc.Button(
-                                                "Close",
-                                                id="close-feedback",
-                                                className="ms-auto",
-                                                n_clicks=0,
-                                            )
-                                        ),
-                                    ],
-                                    id="modal-feedback",
-                                    size="lg",
-                                    is_open=False,
-                                ),
-                                dbc.Modal(
-                                    [
-                                        dbc.ModalHeader("Terminology"),
-                                        dbc.ModalBody([
-                                                html.Div(terms
-                                                ),
-                                            ]
-                                        ),
-                                        dbc.ModalFooter(
-                                            dbc.Button(
-                                                "Close",
-                                                id="close-terminology",
-                                                className="ms-auto",
-                                                n_clicks=0,
-                                            )
-                                        ),
-                                    ],
-                                    id="modal-terminology",
-                                    size="lg",
-                                    is_open=False,
-                                ),
-                                dbc.Modal(
-                                    [
-                                        dbc.ModalHeader("Open Data Used in this Dashboard"),
-                                        dbc.ModalBody([
-                                            html.Div(
-                                            [
-                                                html.H5(["Data Used",
-                                                html.Span(["  (Source: Namur Open Data Portal)"
-                                                ],className="spanmd"),]
-                                                ,
-                                                            className='sm-title mb-2'),
-                                                html.Div(
-                                                    [
-                                                        html.P(
-                                                            [
-                                                                dcc.Link([
-                                                                    "1. ",
-                                                                    "Namur-Ordinary budget by function",
-                                                                ], href='https://translate.google.com/translate?sl=fr&tl=en&u=https://data.namur.be/explore/dataset/namur-budget-ordinaire-par-fonction/information/?disjunctive.fonctions', target="_blank", className="no-decor sm-font text-blue"),
-                                                                html.Span(
-                                                                    " ?",
-                                                                    id="tooltip-target",
-                                                                    style={"cursor": "pointer"},
-                                                                ),
-                                                                html.Br(),
-                                                                html.Span([
-                                                                    'Last update: '
-                                                                    f'{retrieved_date}',
-                                                                ],className="spansm"),
-                                                                html.Br(),
-                                                                html.B([
-                                                                    'Data Quality: 75%'
-                                                                ],className="spanmd"),
-                                                                html.Span(
-                                                                    " ?",
-                                                                    id="tooltipq-target",
-                                                                    style={"cursor": "pointer"},
-                                                                ),
-
-                                                            ], className="sm-font text-black"
-                                                        ),
-                                                        dbc.Tooltip(
-                                                            "This dataset includes the different revenues and expenses allowing "
-                                                            "the current operation of the City of Namur excluding investments.",
-                                                            target="tooltip-target",
-                                                        ),
-                                                        dbc.Tooltip([
-                                                            "No missing values: 100%",
-                                                            html.Br(),
-                                                            "Data Information (title, description, modified data, update frequency): 100%",
-                                                            html.Br(),
-                                                            "Column titles: 100%",
-                                                            html.Br(),
-                                                            "Column Descriptions: 0%",
-                                                            html.Br(),
-                                                            "Average Quality: 75%"],
-                                                            target="tooltipq-target",
-                                                        ),
-                                                    ]
-                                                ),
-                                                html.Hr(),
-                                                html.Div(
-                                                    [
-                                                        html.P(
-                                                            [
-                                                                dcc.Link("2. Namur-Extraordinary budget by function", href='https://translate.google.com/translate?sl=fr&tl=en&u=https://data.namur.be/explore/dataset/namur-budget-extraordinaire-par-fonction/information/?disjunctive.fonctions', target="_blank", className="no-decor sm-font text-blue"),
-                                                                html.Span(
-                                                                    " ?",
-                                                                    id="tooltip-target1",
-                                                                    style={"cursor": "pointer"},
-                                                                ),
-                                                                html.Br(),
-                                                                html.Span([
-                                                                    'Last update: '
-                                                                    f'{retrieved_date}',
-                                                                ],className="spansm"),
-                                                                html.Br(),
-                                                                html.B([
-                                                                    'Data Quality: 75%'
-                                                                ],className="spanmd"),
-                                                                html.Span(
-                                                                    " ?",
-                                                                    id="tooltipq-target1",
-                                                                    style={"cursor": "pointer"},
-                                                                ),
-
-                                                            ], className="sm-font text-black"
-                                                        ),
-                                                        dbc.Tooltip(
-                                                            "This dataset includes the various revenues and expenses of the City of Namur's investments.  "
-                                                            "The expenses represent the amount of the investment, while the revenues represent the type of financing carried out in order to acquire the corresponding investment.",
-                                                            target="tooltip-target1",
-                                                        ),
-                                                        dbc.Tooltip([
-                                                            "No missing values: 100%",
-                                                            html.Br(),
-                                                            "Data Information (title, description, modified data, update frequency): 100%",
-                                                            html.Br(),
-                                                            "Column titles: 100%",
-                                                            html.Br(),
-                                                            "Column Descriptions: 0%",
-                                                            html.Br(),
-                                                            "Average Quality: 75%"],
-                                                            target="tooltipq-target1",
-                                                        ),
-                                                    ]
-                                                )
-                                                ]
-                                            )
-                                            ]
-                                        ),
-                                        dbc.ModalFooter(
-                                            dbc.Button(
-                                                "Close",
-                                                id="close-dataused",
-                                                className="ms-auto",
-                                                n_clicks=0,
-                                            )
-                                        ),
-                                    ],
-                                    id="modal-dataused",
-                                    size="lg",
-                                    is_open=False,
-                                ),
-                                dbc.DropdownMenu(
-                                    user_displays, label="Switch Display Type", bs_size="sm", color="success", className="btn no-decor round mr-1 dt-button"
-                                ),
-                                html.A("Access Source Code", href='https://github.com/chokkipaterne/nbdash', target="_blank", id="sourcecode", style={"display": "none"}, className="btn bglarge no-decor btn-primary"),
-                            ], className="center text-center"),
+                                        className='sm-title mb-2'),
                         ]
                     ),
-                ]
+                ], className="shadow"
             ),
-        ], xs=12, sm=12, md=12, lg=12, xl=12, className="div-left"),
+            html.Br(),
+            dbc.Card(
+                [
+                    dbc.CardBody([
+                            html.H5("Terminology",
+                                        className='title-dash mb-2'),
+                            html.Div(terms
+                            ),
+                        ]
+                    ),
+                ], className="shadow"
+            ),
+            html.Br(),
+            dbc.Card(
+                [
+                    dbc.CardBody([
+                        html.H5(["Data Used",
+                        html.Span(["  (Source: Namur Open Data Portal)"
+                        ],className="spanmd"),]
+                        ,
+                                    className='sm-title mb-2'),
+                        html.Div(
+                            [
+                                html.P(
+                                    [
+                                        dcc.Link([
+                                            "1. ",
+                                            "Namur-Ordinary budget by function",
+                                        ], href='https://translate.google.com/translate?sl=fr&tl=en&u=https://data.namur.be/explore/dataset/namur-budget-ordinaire-par-fonction/information/?disjunctive.fonctions', target="_blank", className="no-decor sm-font text-blue"),
+                                        html.Span(
+                                            " ?",
+                                            id="tooltip-target",
+                                            style={"cursor": "pointer"},
+                                        ),
+                                        html.Br(),
+                                        html.Span([
+                                            'Last update: '
+                                            f'{retrieved_date}',
+                                        ],className="spansm"),
+                                        html.Br(),
+                                        html.B([
+                                            'Data Quality: 75%'
+                                        ],className="spanmd"),
+                                        html.Span(
+                                            " ?",
+                                            id="tooltipq-target",
+                                            style={"cursor": "pointer"},
+                                        ),
+
+                                    ], className="sm-font text-black"
+                                ),
+                                dbc.Tooltip(
+                                    "This dataset includes the different revenues and expenses allowing "
+                                    "the current operation of the City of Namur excluding investments.",
+                                    target="tooltip-target",
+                                ),
+                                dbc.Tooltip([
+                                    "No missing values: 100%",
+                                    html.Br(),
+                                    "Data Information (title, description, modified data, update frequency): 100%",
+                                    html.Br(),
+                                    "Column titles: 100%",
+                                    html.Br(),
+                                    "Column Descriptions: 0%",
+                                    html.Br(),
+                                    "Average Quality: 75%"],
+                                    target="tooltipq-target",
+                                ),
+                            ]
+                        ),
+                        html.Hr(),
+                        html.Div(
+                            [
+                                html.P(
+                                    [
+                                        dcc.Link("2. Namur-Extraordinary budget by function", href='https://translate.google.com/translate?sl=fr&tl=en&u=https://data.namur.be/explore/dataset/namur-budget-extraordinaire-par-fonction/information/?disjunctive.fonctions', target="_blank", className="no-decor sm-font text-blue"),
+                                        html.Span(
+                                            " ?",
+                                            id="tooltip-target1",
+                                            style={"cursor": "pointer"},
+                                        ),
+                                        html.Br(),
+                                        html.Span([
+                                            'Last update: '
+                                            f'{retrieved_date}',
+                                        ],className="spansm"),
+                                        html.Br(),
+                                        html.B([
+                                            'Data Quality: 75%'
+                                        ],className="spanmd"),
+                                        html.Span(
+                                            " ?",
+                                            id="tooltipq-target1",
+                                            style={"cursor": "pointer"},
+                                        ),
+
+                                    ], className="sm-font text-black"
+                                ),
+                                dbc.Tooltip(
+                                    "This dataset includes the various revenues and expenses of the City of Namur's investments.  "
+                                    "The expenses represent the amount of the investment, while the revenues represent the type of financing carried out in order to acquire the corresponding investment.",
+                                    target="tooltip-target1",
+                                ),
+                                dbc.Tooltip([
+                                    "No missing values: 100%",
+                                    html.Br(),
+                                    "Data Information (title, description, modified data, update frequency): 100%",
+                                    html.Br(),
+                                    "Column titles: 100%",
+                                    html.Br(),
+                                    "Column Descriptions: 0%",
+                                    html.Br(),
+                                    "Average Quality: 75%"],
+                                    target="tooltipq-target1",
+                                ),
+                            ]
+                        )
+                        ]
+                    ),
+                ], className="shadow"
+            ),
+            html.Br(),
+            dbc.Card(
+                [
+                    dbc.CardBody([
+                            html.H5("Give Feedback",
+                                        className='sm-title mb-2'),
+                            html.Div([
+                                dbc.Textarea(id="comments",className="mb-1", placeholder="Leave your comments to help improve the dashboard"),
+                                html.Small([
+                                "Please check previous comments below before adding your comment."
+                                ], className="spansm"),
+                                html.Br(),
+                                html.Button('Submit', id='submit-val', className="btn bglarge rounded no-decor btn-primary", n_clicks=0),
+                            ], className="mb-4"),
+                          html.H5("Previous comments", className='sm-title mb-2'),
+                          html.Div(table_feedback, id="feedback"),
+                          html.Br(),
+                        ]
+                    ),
+                ], className="shadow"
+            ),
+        ], xs=12, sm=12, md=3, lg=3, xl=3, className="div-left"),
         dbc.Col([
             dbc.Card(
                 [
@@ -495,37 +456,12 @@ layout = dbc.Container([
                         align="start"),
                         ]
                     ),
-                ], className="minh"
+                ], className="shadow minh"
             ),
-            ], xs=12, sm=12, md=12, lg=12, xl=12, className="div-right")
+            ], xs=12, sm=12, md=9, lg=9, xl=9, className="div-right")
         ]
     )
 ], fluid=True)
-
-
-#Open or close modal
-def toggle_modal(n1, n2, is_open):
-    if n1 or n2:
-        return not is_open
-    return is_open
-
-app.callback(
-    Output("modal-feedback", "is_open"),
-    [Input("open-feedback", "n_clicks"), Input("close-feedback", "n_clicks")],
-    State("modal-feedback", "is_open"),
-)(toggle_modal)
-
-app.callback(
-    Output("modal-terminology", "is_open"),
-    [Input("open-terminology", "n_clicks"), Input("close-terminology", "n_clicks")],
-    State("modal-terminology", "is_open"),
-)(toggle_modal)
-
-app.callback(
-    Output("modal-dataused", "is_open"),
-    [Input("open-dataused", "n_clicks"), Input("close-dataused", "n_clicks")],
-    State("modal-dataused", "is_open"),
-)(toggle_modal)
 
 #register user feedback
 @app.callback(
@@ -677,7 +613,7 @@ def update_summary(budget_type, budget_year, pasdutt, unpeu, biensure):
                                 className="stat-text")
                         ]
                     ),
-                ], className="round maxwd"
+                ], className="round"
             )
         ], xs=12, sm=12, md=4, lg=4, xl=4),
         dbc.Col([
@@ -703,7 +639,7 @@ def update_summary(budget_type, budget_year, pasdutt, unpeu, biensure):
                                 className="stat-text")
                         ]
                     ),
-                ], className="round maxwd"
+                ], className="round"
             )
         ], xs=12, sm=12, md=4, lg=4, xl=4),
         ], align="start", style={"justify-content": "center"}),

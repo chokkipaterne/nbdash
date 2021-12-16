@@ -15,9 +15,6 @@ The dashboard was created to evaluate whether citizens are more receptive to wel
   * pip install -r requirements.txt
 
 ## Interface
-![HomePage](/assets/Homepage_NBDash.png)
-HomePage Interface of NBDash.
-
 ![NBDash Interface for advanced display](/assets/full_page_nbdash.png)
 NBDash Interface for advanced display.
 

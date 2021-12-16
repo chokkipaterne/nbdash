@@ -26,7 +26,7 @@ body, html{
     background: #28a745;
     line-height: 1.55;
     text-align: center;
-    font-size: 1.2rem;
+    font-size: 1.45rem;
     padding: 7px 10px;
     color: white;
     margin: 0px !important;
@@ -90,7 +90,7 @@ a.no-decor:focus, a.no-decor:active{
   color: #000000;
 }
 .sm-title{
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   font-weight: 600;
   /*color: #28a745;*/
   color: #000000;
@@ -128,10 +128,10 @@ a.no-decor:focus, a.no-decor:active{
     box-shadow: 0 2px 2px 0 rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%), 0 1px 5px 0 rgb(0 0 0 / 20%);
 }
 .div-right{
-  margin-bottom: 50px;
+  margin-bottom: 20px;
 }
 .div-left{
-  margin-bottom: 50px;
+  margin-bottom: 20px;
 }
 .round{
   border-radius: 15px;
@@ -145,7 +145,7 @@ a.no-decor:focus, a.no-decor:active{
   padding-left: 0px !important;
 }*/
 .stat-title{
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 600;
 }
 .stat-amt{
@@ -154,7 +154,7 @@ a.no-decor:focus, a.no-decor:active{
   text-align: center;
 }
 .stat-text{
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   text-align: right;
 }
 .greenspan{
@@ -210,7 +210,7 @@ label{
   margin-bottom: 30px;
 }
 #interpret-graph{
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   background: #eee;
   padding: 10px;
 }
@@ -252,4 +252,7 @@ hr{
 
 .spanmd{
   font-size: 1.05rem;
+}
+.red{
+  color: red !important;
 }
